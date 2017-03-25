@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.SeekBar;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
@@ -33,14 +35,19 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.innovation.recomride.R;
 import com.innovation.recomride.route.RouteActivity;
+import com.innovation.recomride.util.SettingData;
+import com.innovation.recomride.util.ToastUtil;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LocationSource,
-        AMapLocationListener {
+        AMapLocationListener, View.OnClickListener {
     private MapView mapView;
     private AMap aMap;
     private OnLocationChangedListener mListener;
     private LocationManagerProxy mAMapLocationManager;
+    private Button safe;
+    private Button quick;
+    private Button comfort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +64,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with Go!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 startActivity(new Intent(getApplicationContext(),
                         RouteActivity.class));
             }
@@ -79,6 +84,12 @@ public class MainActivity extends AppCompatActivity
             aMap = mapView.getMap();
             setUpMap();
         }
+        safe = (Button) findViewById(R.id.shortestButton);
+        quick = (Button) findViewById(R.id.satisfiedButton);
+        comfort = (Button) findViewById(R.id.personalButton);
+        safe.setOnClickListener(this);
+        quick.setOnClickListener(this);
+        comfort.setOnClickListener(this);
     }
 
     /**
@@ -100,7 +111,6 @@ public class MainActivity extends AppCompatActivity
         // aMap.setMyLocationType()
         UiSettings uiSettings = aMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(false);
-        aMap.moveCamera(CameraUpdateFactory.zoomBy(4, new Point(20, 20)));
     }
 
 
@@ -143,14 +153,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        if (id == R.id.nav_manage) {
+            startActivity(new Intent(getApplicationContext(),
+                    SettingActivity.class));
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -221,5 +226,25 @@ public class MainActivity extends AppCompatActivity
             mAMapLocationManager.destroy();
         }
         mAMapLocationManager = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.shortestButton:
+                SettingData.setSetting(SettingData.SAFE);
+                ToastUtil.show(this, "修改默认个性化至更高安全性");
+                break;
+            case R.id.satisfiedButton:
+                SettingData.setSetting(SettingData.SATISFIED);
+                ToastUtil.show(this, "修改默认个性化至更高便捷性");
+                break;
+            case R.id.personalButton:
+                SettingData.setSetting(SettingData.COMFORT);
+                ToastUtil.show(this, "修改默认个性化至更高舒适性");
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -160,13 +160,13 @@
                 android:id="@+id/shortestButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shortest" />
+                android:text="@string/shortt" />
 
             <Button
                 android:id="@+id/satisfiedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/satisfied" />
+                android:text="@string/saitisfieda" />
 
         </LinearLayout>
 
