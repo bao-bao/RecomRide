@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +21,7 @@ import com.amap.api.maps2d.AMap.OnMarkerClickListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
+import com.amap.api.maps2d.model.BitmapDescriptor;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
@@ -44,6 +46,8 @@ public class RouteActivity extends Activity implements OnMarkerClickListener,
 
     private EditText startTextView;
     private EditText endTextView;
+    LatLonPoint startPoint;
+    LatLonPoint endPoint;
 
     private boolean isClickStart = false;
     private boolean isClickTarget = false;
@@ -169,20 +173,40 @@ public class RouteActivity extends Activity implements OnMarkerClickListener,
             case SettingData.SAFE:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getSafe());
+                ToastUtil.show(this, "为您规划个性化(更安全)路径");
                 break;
             case SettingData.SATISFIED:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getQuick());
+                ToastUtil.show(this, "为您规划个性化(更便捷)路径");
                 break;
             case SettingData.COMFORT:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getComfort());
+                ToastUtil.show(this, "为您规划个性化(更舒适)路径");
                 break;
             default:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getShort());
+                ToastUtil.show(this, "为您规划最短路径");
                 break;
         }
+        addMarker();
+    }
+
+    private void addMarker() {
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location));
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(new LatLng(startPoint.getLatitude(), startPoint.getLongitude()));
+        markerOptions.title("起点");
+        markerOptions.visible(true);
+        markerOptions.icon(bitmapDescriptor);
+        aMap.addMarker(markerOptions);
+
+        markerOptions.position(new LatLng(endPoint.getLatitude(), endPoint.getLongitude()));
+        markerOptions.title("终点");
+        aMap.addMarker(markerOptions);
     }
 
     @Override
@@ -191,12 +215,12 @@ public class RouteActivity extends Activity implements OnMarkerClickListener,
         isClickTarget = false;
         if (marker.equals(startMk)) {
             startTextView.setText("地图上的起点");
-            LatLonPoint startPoint = AMapUtil.convertToLatLonPoint(startMk.getPosition());
+            startPoint = AMapUtil.convertToLatLonPoint(startMk.getPosition());
             startMk.hideInfoWindow();
             startMk.remove();
         } else if (marker.equals(targetMk)) {
             endTextView.setText("地图上的终点");
-            LatLonPoint endPoint = AMapUtil.convertToLatLonPoint(targetMk.getPosition());
+            endPoint = AMapUtil.convertToLatLonPoint(targetMk.getPosition());
             targetMk.hideInfoWindow();
             targetMk.remove();
         }
@@ -267,22 +291,32 @@ public class RouteActivity extends Activity implements OnMarkerClickListener,
             case R.id.safe:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getSafe());
+                ToastUtil.show(this, "为您规划安全性更高路径");
+                addMarker();
                 break;
             case R.id.comfort:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getComfort());
+                ToastUtil.show(this, "为您规划舒适性更高路径");
+                addMarker();
                 break;
             case R.id.quick:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getQuick());
+                ToastUtil.show(this, "为您规划便捷性更高路径");
+                addMarker();
                 break;
             case R.id.shortestButton:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getShort());
+                ToastUtil.show(this, "为您规划最短路径");
+                addMarker();
                 break;
             case R.id.satisfiedButton:
                 aMap.clear();
                 aMap.addPolyline(DrawLine.getSatisfied());
+                ToastUtil.show(this, "为您规划最满意路径");
+                addMarker();
                 break;
             default:
                 break;
